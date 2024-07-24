@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minesweeper</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <h2 id = "head">
+        <div id = "room">RoomID: <%= roomID %></div>
+        <div id = "opponent_progress"></div>
+    </h2>
+    <div class = "content">
+        <div class="container">
+            <div class = "minesweeper" id="minesweeper" unselectable="on"> </div>
+            <script>
+                const roomID = "<%= roomID %>";
+                const socket = io(`http://localhost:8001/index`);
+                        // Handle reception of initial mines data from server
+                socket.on('connection');
+                socket.emit('joinRoom', (roomID));
+    
+            </script>
+            <script src="/js/script.js"></script>
+            <script>
+                socket.on("roomFull", () => {
+                    window.location.replace("http://localhost:8001/home");
+                    alert("Room full");
+                });
+            </script>
+            <script src="/js/drag.js"></script>
+        </div>
+        <div class = "sidebar">
+            <h1>
+                <div id="progress_bar">
+                    <div id = "progress"></div>
+                </div>
+            </h1>
+            <h2>
+                <!-- <div id="progress_bar">
+                    <div id = "progress"></div>
+                </div> -->
+                <div id = "time" class="sidebar_content"></div>
+            </h2>
+    
+        </div>
+    </div>
+    <div id="front_layer">
+        Players: 1/2...
+    </div>
+</body>
+</html>

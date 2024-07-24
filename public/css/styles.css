@@ -1,0 +1,154 @@
+:root {
+    --cell-width: 30px;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    /* align-items: center; */
+    margin: 0;
+    padding: 0;
+    background-color: #565454;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    display:flex;
+    /* overflow: hidden */
+}
+
+h1 {
+    margin: 20px 0;
+    align-items: center;
+}
+
+#minesweeper {
+    display: grid;
+    grid-template-columns: repeat(10, 30px);
+    grid-template-rows: repeat(10, 30px);
+    gap: 2px;
+}
+
+.cell {
+    width: var(--cell-width);
+    height: var(--cell-width);
+    background-color: #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.cell.revealed {
+    background-color: #eee;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.cell.mine {
+    background-color: red;
+}
+
+.cell.flag {
+    background-color: yellow;
+}
+
+*.unselectable {
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+ 
+    /*
+      Introduced in IE 10.
+      See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
+    */
+    -ms-user-select: none;
+    user-select: none;
+ }
+ .container{
+    width: 75vw;
+    height: 40vw;
+    margin: 4px;
+    position: relative;
+    overflow: hidden;
+    cursor: grab;
+    border: solid black 6px;
+    align-self: flex-start;
+
+ }
+ .sidebar{
+    color:rgb(186, 125, 11);
+    width:25vw;
+    /* height:91.25vh; */
+    margin: 4px;
+    /* text-align: center; */
+    /* padding-left:4px; */
+    border-left:solid rgb(75, 74, 74) 2px;
+    border-right:solid rgb(75, 74, 74) 2px;
+    border-top:solid rgb(75, 74, 74) 2px;
+    height:40.7vw;
+    /* align-self: flex-end; */
+    /* background-color: blue; */
+
+ }
+ .content{
+    display:flex;
+ }
+#opponent_progress{
+    text-align: center;
+    align-self:right;
+    width:25vw;
+    margin-right: 8.1px;
+    margin-left: 22vw;
+    color:#999696;
+    /* border-bottom:solid rgb(75, 74, 74) 2px; */
+}
+#room{
+    width:50vw;
+    align-self:flex-start;
+    text-align-last: left;
+    margin-left: 25px;
+    position: relative; 
+
+}
+#progress{
+     width:25vw;
+    text-align: center; 
+    border-bottom:solid rgb(75, 74, 74) 2px;
+    color:rgb(186, 125, 11);
+    padding-bottom: 10px;
+}
+#progress_bar{
+    width:25vw;
+    /* padding-left:10px; */
+    /* align-self: middle; */
+    /* text-align: right; */
+    display:flex;
+    text-align: center;
+}
+#head{
+    width:100vw;
+    display:flex;
+    padding-left:4px;
+    padding-right:10px;
+}
+.sidebar_content{
+    padding-left: 4px;
+}
+#front_layer{
+    width:100vw;
+    position:absolute;
+    font-size: 200px;
+    height: 75vh;
+    color: rgb(134, 91, 10);
+    padding-top:25vh;
+    text-align: center;
+    background-color:rgba(31, 31, 32, 0.9);
+}

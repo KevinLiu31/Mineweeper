@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
+</head>
+<script>
+    function validateroom(){
+        const roomID = document.getElementById('roomID').value;
+        const regex = /^[A-Z]{4}$/;
+      
+        if (regex.test(roomID)) {
+            window.location.href = `/index/${roomID}`;
+        } else {
+            alert('Room ID must be exactly 4 uppercase letters.');
+        }
+    }
+</script>
+    <body>
+        <form onsubmit="event.preventDefault(); validateroom();">
+            <label for="roomID">Room ID:</label>
+            <input type="text" id="roomID" name="roomID" maxlength="4" required>
+            <button type="submit">Go to Room</button>
+          </form>
+        <script>
+            const socket = io("http://localhost:8001");
+            socket.on("connection");
+            
+        </script>
+    </body>
+</html>

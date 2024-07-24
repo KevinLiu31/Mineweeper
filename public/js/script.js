@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 10);
     }
 
-    // Flag a cell
+    // flag a cell
     function flagCell(e) {
             e.preventDefault();
             if(running){
@@ -225,7 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const hoursStr = hours.toString().padStart(2, '0');
         document.getElementById('time').textContent = `Timer: ${hoursStr}:${minutesStr}:${secondsStr}`;
         // console.log(running);
-    } // Update the timer every second
+    } // timer
     var loading = setInterval(()=>{
         document.querySelector("#front_layer").innerHTML=`Players: 1/2${".".repeat(count)}`;
         count%=3;

@@ -52,10 +52,8 @@ gameSpace.on('connection', (socket) => {
       if (roomnum.get(roomID) === 1) {
         board = data;
         // console.log("hi");
-        // Handle the initial board setup or logic when the first player joins
         console.log(`Initial board received from ${socket.id} for room ${roomID}`);
         console.log(data);
-        // Emit the board to other players in the room, if needed
       }else if(roomnum.get(roomID) === 2){
         console.log("starting");
         socket.nsp.to(roomID).emit("start");
@@ -75,10 +73,9 @@ gameSpace.on('connection', (socket) => {
   });
   socket.on('disconnect', () => {
     console.log(`Socket disconnected2: ${socket.id}`);
-    // Decrease the count of clients in the room and handle room cleanup logic if needed
     const roomID = socketRoomPair.get(socket.id);
     roomnum.set(roomID, roomnum.get(roomID) - 1);
-    console.log(`Client left room ${roomID}: ${socket.id}`);
+    console.log(`Player left room ${roomID}: ${socket.id}`);
     socketRoomPair.delete(socket.id);
     if(roomnum.get(roomID) === 0){
       roomnum.delete(roomID);

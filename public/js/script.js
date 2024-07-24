@@ -265,22 +265,22 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("***********");
         };
     
-        const countdown = () => {
-            if (x > 0) {
-                console.log(x);
-                setTimeout(() => {
-                    updateFrontLayer(x);
-                    x--;
-                    countdown();
-                }, 1000);
-            } else {
-                setTimeout(() => {
-                    updateFrontLayer('GO!');
-                }, 500);
-            }
-        };
+        // const countdown = () => {
+        //     if (x > 0) {
+        //         console.log(x);
+        //         setTimeout(() => {
+        //             updateFrontLayer(x);
+        //             x--;
+        //             countdown();
+        //         }, 1000);
+        //     } else {
+        //         setTimeout(() => {
+        //             updateFrontLayer('GO!');
+        //         }, 500);
+        //     }
+        // };
     
-        countdown();
+        // countdown();
     
         clearInterval(loading);
         setInterval(updateTimer, 1000);
@@ -290,8 +290,8 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector("#front_layer").innerHTML = ``;
         console.log("tT");
         const frontLayer = document.getElementById("front_layer");
-        // frontLayer.style.width = "0px";
-        // frontLayer.style.height = "0px";
-        // frontLayer.style.fontSize = "0px";
+        frontLayer.style.width = "0px";
+        frontLayer.style.height = "0px";
+        frontLayer.style.fontSize = "0px";
     });
 });

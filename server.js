@@ -75,13 +75,15 @@ gameSpace.on('connection', (socket) => {
     console.log(`Socket disconnected2: ${socket.id}`);
     const roomID = socketRoomPair.get(socket.id);
     roomnum.set(roomID, roomnum.get(roomID) - 1);
+    console.log(roomnum.get(roomID));
     console.log(`Player left room ${roomID}: ${socket.id}`);
     socketRoomPair.delete(socket.id);
     if(roomnum.get(roomID) === 0){
       roomnum.delete(roomID);
     }
     if(roomnum.get(roomID)==1){
-      socket.emit("DC_end_game");
+      console.log("ending game");
+      socket.nsp.to(roomID).emit("DC_end_game");
     }
     });
 });

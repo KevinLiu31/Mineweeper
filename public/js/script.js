@@ -1,39 +1,27 @@
-
-// console.log("x");
 document.addEventListener('DOMContentLoaded', () => {
     const grid = document.querySelector('#minesweeper');
     const opp = document.querySelector('#opponent_progress');
     const prog = document.querySelector('#progress');
-    const width = 25;
+    const width = 35;
     const height = 25;
-    let cell_width = 75/width;
+    let cell_width = 67.7/width;
     let temp_index = 0;
     let count = 0;
     let running = false;
+    let revealed = 0;
+    let flags = 0;
     let cells = [];
     let mines = [];
     first_move = false;
-    if(cell_width < 4){
-        cell_width = 4;
+    if(cell_width < 3){
+        cell_width = 3;
     }
     // console.log("x");
-    // if(cell_width <)
     document.documentElement.style.setProperty('--cell-width', `${cell_width}vw`);
     const mineCount = Math.floor((0.2)*(width)*(height));
     function init() {
-        running = false;
-        first_move = false;
-        grid.innerHTML = '';
-        opponent_total = 0;
-        opp.innerHTML=`Opponent: ${opponent_total}/${width*height}`;
-        cells = [];
-        mines = [];
-        flags = 0;
-        revealed = 0;
-        prog.innerHTML=`Progress: ${revealed+flags}/${width*height}`;
-        // running = true;
-        grid.style.gridTemplateColumns = `repeat(${width}, 1fr)`;
-        grid.style.gridTemplateRows = `repeat(${height}, 1fr)`;
+        let cells = [];
+        let mines = [];
         for (let i = 0; i < width * height; i++) {
             const cell = document.createElement('div');
             cell.classList.add('cell');
@@ -46,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
         //mines
         // console.log("x");
         do{
-            const randomIndex = Math.floor(Math.random() * cells.length);
+            const randomIndex = Math.floor(Math.random() * (cells.length-3))+3;
             if (!mines.includes(randomIndex)) {
                 if(mines.length < (mineCount)){
                     mines.push(randomIndex);
@@ -83,8 +71,37 @@ document.addEventListener('DOMContentLoaded', () => {
             data: cell.getAttribute('data') || null
         }));
 
-        const initialData = { mines, cells: cellData };
-        socket.emit('board', initialData); 
+        let boardData = { mines, cells: cellData };
+        return boardData;
+    }
+    function loadBoard(board){
+        revealed = 0;
+        flags = 0;
+        running = false;
+        first_move = false;
+        grid.innerHTML = '';
+        opponent_total = 0;
+        opp.innerHTML=`Opponent: ${opponent_total}/${width*height}`;
+        prog.innerHTML=`Progress: ${revealed+flags}/${width*height}`;
+        grid.style.gridTemplateColumns = `repeat(${width}, 1fr)`;
+        grid.style.gridTemplateRows = `repeat(${height}, 1fr)`;
+        mines = board.mines;
+        cells = [];
+        grid.innerHTML = '';
+        board.cells.forEach(cellData => {
+            const cell = document.createElement('div');
+            cell.classList.add('cell');
+            cell.setAttribute('id', cellData.id);
+            cell.addEventListener('click', clickCell);
+            cell.addEventListener('contextmenu', flagCell);
+            if (cellData.data) {
+                cell.setAttribute('data', cellData.data);
+                //comment this line to hide numbers
+                cell.textContent = cellData.data;
+            }
+            grid.appendChild(cell);
+            cells.push(cell);
+        })
     }
     function clickCell(e) {
         if(running){
@@ -121,6 +138,17 @@ document.addEventListener('DOMContentLoaded', () => {
             prog.innerHTML=`Progress: ${revealed+flags}/${width*height}`;
         }
         //win();
+    }
+    function solveAll(){
+        for(let x = 0; x<width*height; x++){
+            if(!cells[x].classList.contains('revealed')){
+                if(mines.includes(cells[x])){
+                    flagCell({target: cells[x]});
+                }else{
+                    revealCell(cells[x]);
+                }
+        }
+        };
     }
     function revealCell(cell) {
         if(running){
@@ -175,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         const moveData = flags+revealed;
         socket.emit("onMove", moveData);
-        prog.innerHTML=revealed+flags;
+        prog.innerHTML=`Progress: ${revealed+flags}/${width*height}`;
     }
 
     // Game over
@@ -231,25 +259,13 @@ document.addEventListener('DOMContentLoaded', () => {
         count%=3;
         count+=1;
     }, 500);
-    init();
+    boardData = init();
+    socket.emit('board', boardData); 
+    loadBoard(boardData);
     socket.on('board', (initialData) =>{
-        mines = initialData.mines;
-        cells = [];
-        grid.innerHTML = '';
-        initialData.cells.forEach(cellData => {
-            const cell = document.createElement('div');
-            cell.classList.add('cell');
-            cell.setAttribute('id', cellData.id);
-            cell.addEventListener('click', clickCell);
-            cell.addEventListener('contextmenu', flagCell);
-            if (cellData.data) {
-                cell.setAttribute('data', cellData.data);
-                //comment this line to hide numbers
-                cell.textContent = cellData.data;
-            }
-            grid.appendChild(cell);
-            cells.push(cell);
-        });
+        if(!running){
+            loadBoard(initialData);
+        }
     });
     socket.on("onMove", (moveData)=>{
         console.log("recieved opponent data");
@@ -264,34 +280,41 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelector("#front_layer").innerHTML = `${value}`;
             console.log("***********");
         };
-    
-        // const countdown = () => {
-        //     if (x > 0) {
-        //         console.log(x);
-        //         setTimeout(() => {
-        //             updateFrontLayer(x);
-        //             x--;
-        //             countdown();
-        //         }, 1000);
-        //     } else {
-        //         setTimeout(() => {
-        //             updateFrontLayer('GO!');
-        //         }, 500);
-        //     }
-        // };
-    
-        // countdown();
-    
-        clearInterval(loading);
-        setInterval(updateTimer, 1000);
-    
-        running = true;
-        console.log("t");
-        document.querySelector("#front_layer").innerHTML = ``;
-        console.log("tT");
-        const frontLayer = document.getElementById("front_layer");
-        frontLayer.style.width = "0px";
-        frontLayer.style.height = "0px";
-        frontLayer.style.fontSize = "0px";
+        
+        const countdown = () => {
+            clearInterval(loading);
+            if (x > 0) {
+                console.log(x);             
+                setTimeout(() => {
+                    updateFrontLayer(x);
+                    x--;
+                    countdown();
+                }, 1000);
+            } else if(x==0){
+                setTimeout(() => {
+                    updateFrontLayer('GO!');
+                    x--;
+                    countdown();
+                }, 500);
+            }else{
+                if(!running){
+                    setInterval(updateTimer,1000);
+                };
+                running = true;
+                document.querySelector("#front_layer").innerHTML = ``;
+                const frontLayer = document.getElementById("front_layer");
+                frontLayer.style.width = "0px";
+                frontLayer.style.height = "0px";
+                frontLayer.style.fontSize = "0px";
+                clearInterval(updateTimer);
+                clickCell({ target: cells[0] });
+            }
+        };
+        countdown();
+    });
+    socket.on("DC_end_game", ()=>{
+        console.log("win");
+        solveAll();
+        win();
     });
 });

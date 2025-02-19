@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const db = require('./db');
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 const roomnum = new Map();
@@ -11,7 +12,9 @@ app.use(express.static('public'));
 app.get('/home', (req, res) => { 
   res.render('home');
 });
-
+app.get('/login', (req, res) => { 
+  res.render('login');
+});
 app.get('/index', (req, res) => { 
   res.render('index', { layout: false });
 });
@@ -70,6 +73,12 @@ gameSpace.on('connection', (socket) => {
   socket.on("onMove", (data)=>{
     socket.to(roomID).emit("onMove", (data));
   });
+  socket.on("Won", ()=>{
+    Socket.to(roomID).emit("Lost");
+  });
+  });
+  socket.on("Lost", (progress)=>{
+    console.log("lost");
   });
   socket.on('disconnect', () => {
     console.log(`Socket disconnected2: ${socket.id}`);
@@ -83,7 +92,7 @@ gameSpace.on('connection', (socket) => {
     }
     if(roomnum.get(roomID)==1){
       console.log("ending game");
-      socket.nsp.to(roomID).emit("DC_end_game");
+      socket.nsp.to(roomID).emit("DC_end_game", ("Opponent Disconnected"));
     }
     });
 });

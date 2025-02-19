@@ -1,4 +1,6 @@
+import { bycrypt } from bycrypt;
 document.addEventListener('DOMContentLoaded', () => {
+    const insta_end = false;
     const grid = document.querySelector('#minesweeper');
     const opp = document.querySelector('#opponent_progress');
     const prog = document.querySelector('#progress');
@@ -13,12 +15,18 @@ document.addEventListener('DOMContentLoaded', () => {
     let cells = [];
     let mines = [];
     first_move = false;
+    mine_shown = 0;
     if(cell_width < 3){
         cell_width = 3;
     }
     // console.log("x");
     document.documentElement.style.setProperty('--cell-width', `${cell_width}vw`);
     const mineCount = Math.floor((0.2)*(width)*(height));
+    // Password hash
+    async function hash(password){
+        const hashedPassword = await bcrypt.hash(password, 10); 
+        return hashedPassword;
+    }
     function init() {
         let cells = [];
         let mines = [];
@@ -161,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 cell.innerText = '';
             }
-            win();
+            win("Completion");
          }
         }
     }
@@ -194,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 cell.classList.add('flag');
                 cell.innerText = '🚩';
                 flags++;
-                win();
+                win("Completion");
             } else {
                 cell.classList.remove('flag');
                 cell.innerText = '';
@@ -208,25 +216,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Game over
     function gameOver(cell) {
-        cells.forEach(cell => {
-            const cellId = parseInt(cell.getAttribute('id'));
-            if (mines.includes(cellId)) {
-                cell.classList.add('mine');
-                cell.innerText = '💣';
-            }
-        });
-        alert('Game Over');
-        running = false;
+        if(insta_end){
+            cells.forEach(cell => {
+                const cellId = parseInt(cell.getAttribute('id'));
+                if (mines.includes(cellId)) {
+                    cell.classList.add('mine');
+                    cell.innerText = '💣';
+                }
+
+            });
+            alert('Game Over');
+            running = false;
+        }else{
+            cell.classList.add('mine');
+            cell.innerText = '💣';
+        }
     }
-    function win(){
+    function win(text){
+        if(insta_end){
         if(flags===mineCount){
             if(revealed === (width*height-mineCount)){
-                alert('WIN');
+                alert(`WIN: ${text}`);
                 var audio = new Audio("/success.mp3");
                 audio.play();
                 running = false;
+                socket.emit("Won");
             }
         }
+    }else{
+        console.log("2");
+    }
     }
     let seconds = 0;
     let minutes = 0;
@@ -254,12 +273,17 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('time').textContent = `Timer: ${hoursStr}:${minutesStr}:${secondsStr}`;
         // console.log(running);
     } // timer
+    function restart(){
+        let new_board = init();
+        socket.emit('RESTART', new_board);
+    }
     var loading = setInterval(()=>{
         document.querySelector("#front_layer").innerHTML=`Players: 1/2${".".repeat(count)}`;
         count%=3;
         count+=1;
     }, 500);
     boardData = init();
+    console.log("aba");
     socket.emit('board', boardData); 
     loadBoard(boardData);
     socket.on('board', (initialData) =>{
@@ -312,9 +336,12 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         countdown();
     });
-    socket.on("DC_end_game", ()=>{
+    socket.on("Lost", ()=>{
+        gameOver({ target: mines[0] });
+    });
+    socket.on("end_game", (text)=>{
         console.log("win");
         solveAll();
-        win();
+        win(text);
     });
 });
